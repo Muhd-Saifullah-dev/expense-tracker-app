@@ -1,80 +1,77 @@
+import React, { useState } from "react";
 import {
-  View,
-  Image,
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
-  Text,
+  View,
 } from "react-native";
-import React, { useState } from "react";
-import Input from "@/components/ui/Input";
-import Card from "@/components/ui/Card";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
+import { useRouter } from "expo-router";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const router=useRouter()
   return (
     <KeyboardAvoidingView
       className="flex-1"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View className="flex-1 bg-app-surface px-6 justify-center">
-        <Card className="w-full shadow-card">
-          {/* Logo */}
-          <View className="items-center">
-            <Text className="text-text-primary text-3xl font-bold mt-5">
+      <View className="flex-1 bg-background justify-center px-6">
+        <Card>
+          <CardHeader className="items-center">
+            <CardTitle className="text-3xl">
               Welcome Back
-            </Text>
+            </CardTitle>
 
-            <Text className="text-text-secondary text-center mt-2">
+            <CardDescription className="text-center">
               Login to manage your expenses
-            </Text>
-          </View>
+            </CardDescription>
+          </CardHeader>
 
-          {/* Inputs */}
-          <View className="mt-8">
+          <CardContent>
             <Input
-              placeholder="Enter your email"
+              placeholder="Email"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
-              className="h-14 bg-input-background"
+              autoCapitalize="none"
+              className="mb-4"
             />
 
             <Input
-              placeholder="Enter your password"
+              placeholder="Password"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
-              className="h-14 mt-4 bg-input-background"
             />
-          </View>
 
-      
+            <Button className="mt-6">
+              <Text>Login</Text>
+            </Button>
 
-          {/* Login Button */}
-          <TouchableOpacity
-            className="
-              bg-button-primary
-              h-14
-              rounded-full
-              items-center
-              justify-center
-              mt-8
-            "
-          >
-            <Text className="text-text-white text-lg font-bold">Login</Text>
-          </TouchableOpacity>
+            <View className="flex-row justify-center mt-6">
+              <Text className="text-muted-foreground">
+                Don't have an account?
+              </Text>
 
-          {/* Signup */}
-          <View className="flex-row justify-center mt-6">
-            <Text className="text-text-secondary">Don't have an account?</Text>
-
-            <TouchableOpacity>
-              <Text className="text-brand-primary font-bold ml-2">Sign Up</Text>
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity onPress={()=>router.push("/(auth)/signup")}>
+                <Text className="ml-2 text-primary font-semibold">
+                  Sign Up
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </CardContent>
         </Card>
       </View>
     </KeyboardAvoidingView>
