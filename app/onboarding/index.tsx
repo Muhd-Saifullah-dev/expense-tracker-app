@@ -1,4 +1,11 @@
-import { View, Text, Image, FlatList, Dimensions, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  FlatList,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import React, { useRef, useState } from "react";
 import { router } from "expo-router";
 
@@ -26,10 +33,8 @@ const slides = [
 ];
 
 export default function Onboarding() {
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
-
 
   const nextSlide = () => {
     if (currentIndex < slides.length - 1) {
@@ -41,10 +46,8 @@ export default function Onboarding() {
     }
   };
 
-
   return (
-    <View className="flex-1 bg-white">
-
+    <View className="flex-1 bg-background">
       <FlatList
         ref={flatListRef}
         data={slides}
@@ -52,53 +55,40 @@ export default function Onboarding() {
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={(event) => {
-          const index = Math.round(
-            event.nativeEvent.contentOffset.x / width
-          );
+          const index = Math.round(event.nativeEvent.contentOffset.x / width);
           setCurrentIndex(index);
         }}
         renderItem={({ item }) => (
-          <View
-            className="justify-center items-center px-6"
-            style={{ width }}
-          >
-
+          <View className="justify-center items-center px-6" style={{ width }}>
             <Image
               source={item.image}
               className="w-72 h-72"
               resizeMode="contain"
             />
 
-            <Text className="text-text-primary text-4xl font-bold text-center mt-10">
+            <Text className="text-foreground text-4xl font-bold">
               {item.title}
             </Text>
 
-            <Text className="text-secondaryText text-center mt-4 text-base">
+            <Text className="text-muted-foreground text-center mt-4">
               {item.description}
             </Text>
-
           </View>
         )}
         keyExtractor={(item) => item.id}
       />
 
-
       {/* Button */}
       <View className="px-6 pb-10">
-
         <TouchableOpacity
           onPress={nextSlide}
-          className="bg-button-primary py-4 rounded-2xl"
+          className="bg-primary py-4 rounded-2xl"
         >
-          <Text className="text-white text-center font-bold text-lg">
-            {currentIndex === slides.length - 1
-              ? "Get Started"
-              : "Next"}
+          <Text className="text-primary-foreground text-center font-bold">
+            {currentIndex === slides.length - 1 ? "Get Started" : "Next"}
           </Text>
         </TouchableOpacity>
-
       </View>
-
     </View>
   );
 }
