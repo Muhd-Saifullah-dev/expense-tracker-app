@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -6,7 +6,7 @@ import {
   View,
 } from "react-native";
 import { router } from "expo-router";
-import * as Location from "expo-location";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,53 +17,38 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
+  signupSchema,
+  SignupSchema,
+} from "@/schemas/auth.schema";
+
+import { useSignup } from "@/hooks/auth/useSignup.hook";
+import { getErrorMessage } from "@/utils/get-error-message";
+
 export default function Signup() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [city, setCity] = useState("");
-  const [region, setRegion] = useState("");
-  const [postalCode, setPostalCode] = useState("");
-  const [open, setOpen] = useState(false);
-  const getUserLocation = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
+  const { mutate, isPending, error, reset } = useSignup();
 
-    if (status !== "granted") {
-      console.log("Location permission denied");
-      return;
-    }
+  const {
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<SignupSchema>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+  });
 
-    const location = await Location.getCurrentPositionAsync({});
-
-    console.log("Coordinates:", location.coords);
-
-    const address = await Location.reverseGeocodeAsync({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    });
-
-    console.log("Address:", address);
-
-    if (address.length > 0) {
-      const place = address[0];
-
-      setCity(place.city ?? "");
-      setRegion(place.region ?? "");
-      setPostalCode(place.postalCode ?? "");
-
-      console.log("City:", place.city);
-      console.log("Region:", place.region);
-      console.log("Postal Code:", place.postalCode);
-    }
+  const onSubmit = (data: SignupSchema) => {
+    mutate(data);
   };
+
   return (
     <KeyboardAvoidingView
       className="flex-1"
@@ -72,7 +57,9 @@ export default function Signup() {
       <View className="flex-1 bg-background justify-center px-6">
         <Card>
           <CardHeader className="items-center">
-            <CardTitle className="text-3xl">Create Account</CardTitle>
+            <CardTitle className="text-3xl">
+              Create Account
+            </CardTitle>
 
             <CardDescription className="text-center">
               Sign up to start tracking your expenses
@@ -82,30 +69,74 @@ export default function Signup() {
           <CardContent>
             <Input
               placeholder="Full Name"
-              value={name}
-              onChangeText={setName}
               autoCapitalize="words"
-              className="mb-4"
+              className="mb-2"
+              onChangeText={(value) => {
+                reset();
+                setValue("name", value, {
+                  shouldValidate: true,
+                });
+              }}
             />
+
+            {errors.name && (
+              <Text className="text-red-500 text-xs mb-3">
+                {errors.name.message}
+              </Text>
+            )}
 
             <Input
               placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
-              className="mb-4"
+              className="mb-2"
+              onChangeText={(value) => {
+                reset();
+                setValue("email", value, {
+                  shouldValidate: true,
+                });
+              }}
             />
+
+            {errors.email && (
+              <Text className="text-red-500 text-xs mb-3">
+                {errors.email.message}
+              </Text>
+            )}
 
             <Input
               placeholder="Password"
-              value={password}
-              onChangeText={setPassword}
               secureTextEntry
+              onChangeText={(value) => {
+                reset();
+                setValue("password", value, {
+                  shouldValidate: true,
+                });
+              }}
             />
 
-            <Button className="mt-6" onPress={() => setOpen(true)}>
-              <Text>Create Account</Text>
+            {errors.password && (
+              <Text className="text-red-500 text-xs mt-2">
+                {errors.password.message}
+              </Text>
+            )}
+
+            {error && (
+              <Text className="text-red-500 text-xs mt-2">
+                {getErrorMessage(error)}
+              </Text>
+            )}
+
+            <Button
+              className="mt-6"
+              disabled={isPending}
+              onPress={handleSubmit(onSubmit)}
+            >
+              <Text>
+                {isPending
+                  ? "Creating Account..."
+                  : "Create Account"}
+              </Text>
             </Button>
 
             <View className="flex-row justify-center mt-6">
@@ -113,41 +144,17 @@ export default function Signup() {
                 Already have an account?
               </Text>
 
-              <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
-                <Text className="ml-2 text-primary font-semibold">Login</Text>
+              <TouchableOpacity
+                onPress={() => router.push("/(auth)/login")}
+              >
+                <Text className="ml-2 text-primary font-semibold">
+                  Login
+                </Text>
               </TouchableOpacity>
             </View>
           </CardContent>
         </Card>
       </View>
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="w-[90%] max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Enable Location</DialogTitle>
-
-            <DialogDescription>
-              We use your location to detect your city and postal code
-              automatically.
-            </DialogDescription>
-          </DialogHeader>
-
-          <DialogFooter>
-            <Button variant="outline" onPress={() => setOpen(false)}>
-              <Text>Cancel</Text>
-            </Button>
-
-            <Button
-              onPress={async () => {
-                setOpen(false);
-                await getUserLocation();
-              }}
-            >
-              <Text>Access</Text>
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </KeyboardAvoidingView>
   );
 }
