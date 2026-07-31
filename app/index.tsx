@@ -1,5 +1,6 @@
+import { getOnboardingCompleted } from "@/storage/onboarding.storage";
 import { Redirect } from "expo-router";
 
 export default function Index() {
-  return <Redirect href="/onboarding" />;
+  return <Redirect href="/splash" />;
 }
