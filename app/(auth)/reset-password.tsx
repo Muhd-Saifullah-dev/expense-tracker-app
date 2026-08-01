@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
-import { useLocalSearchParams, router } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,28 +13,40 @@ import {
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import {
+  resetPasswordSchema,
+  ResetPasswordSchema,
+} from "@/schemas/auth.schema";
+
+import { useResetPassword } from "@/hooks/auth/useResetPassword.hook";
+import { getErrorMessage } from "@/utils/get-error-message";
+
 export default function ResetPasswordScreen() {
   const { email } = useLocalSearchParams<{ email: string }>();
 
-  console.log("email in reset password", email);
+  const { mutate, isPending, error, reset } = useResetPassword();
 
-  const [newPassword, setNewPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const {
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<ResetPasswordSchema>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
 
-  const handleResetPassword = async () => {
-    console.log("button")
-    if (newPassword !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
-
-    // TODO:
-    // await api.post("/auth/reset-password", {
-    //   email,
-    //   newPassword,
-    // });
-
-    router.replace("/(auth)/login");
+  const onSubmit = (data: ResetPasswordSchema) => {
+    mutate({
+      email,
+      newPassword: data.newPassword,
+    });
   };
 
   return (
@@ -58,20 +70,52 @@ export default function ResetPasswordScreen() {
             <Input
               placeholder="New Password"
               secureTextEntry
-              value={newPassword}
-              onChangeText={setNewPassword}
-              className="mb-4"
+              value={watch("newPassword")}
+              onChangeText={(value) => {
+                reset();
+                setValue("newPassword", value, {
+                  shouldValidate: true,
+                });
+              }}
+              className="mb-2"
             />
+
+            {errors.newPassword && (
+              <Text className="text-red-500 text-xs mb-3">
+                {errors.newPassword.message}
+              </Text>
+            )}
 
             <Input
               placeholder="Confirm Password"
               secureTextEntry
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
+              value={watch("confirmPassword")}
+              onChangeText={(value) => {
+                reset();
+                setValue("confirmPassword", value, {
+                  shouldValidate: true,
+                });
+              }}
             />
 
-            <Button className="mt-6" onPress={handleResetPassword}>
-              <Text>Reset Password</Text>
+            {errors.confirmPassword && (
+              <Text className="text-red-500 text-xs mt-2">
+                {errors.confirmPassword.message}
+              </Text>
+            )}
+
+            {error && (
+              <Text className="text-red-500 text-xs mt-2">
+                {getErrorMessage(error)}
+              </Text>
+            )}
+
+            <Button
+              className="mt-6"
+              disabled={isPending}
+              onPress={handleSubmit(onSubmit)}
+            >
+              <Text>{isPending ? "Resetting..." : "Reset Password"}</Text>
             </Button>
           </CardContent>
         </Card>

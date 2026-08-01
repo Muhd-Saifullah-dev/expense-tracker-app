@@ -1,46 +1,100 @@
-import { View, Text, TextInput, Pressable } from "react-native";
-import React, { useState } from "react";
-import { router } from "expo-router";
+import React from "react";
+import { KeyboardAvoidingView, Platform, View } from "react-native";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import {
+  forgetPasswordSchema,
+  ForgetPasswordSchema,
+} from "@/schemas/auth.schema";
+
+import {useForgetPassword } from "@/hooks/auth/useForgetPassword.hook";
+import { getErrorMessage } from "@/utils/get-error-message";
 
 export default function ForgetPasswordScreen() {
-  const [email, setEmail] = useState("");
+  const { mutate, isPending, error, reset } = useForgetPassword();
 
-  const handleSendOtp = () => {
-    // TODO: Call POST /auth/forgot-password
-    router.push({
-      pathname: "/verify-otp",
-      params: { email },
-    });
+  const {
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<ForgetPasswordSchema>({
+    resolver: zodResolver(forgetPasswordSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  const onSubmit = (data: ForgetPasswordSchema) => {
+    mutate(data);
   };
 
   return (
-    <View className="flex-1 bg-background px-6 justify-center">
-      <Text className="text-3xl font-bold text-white mb-2">
-        Forgot Password
-      </Text>
+    <KeyboardAvoidingView
+      className="flex-1"
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <View className="flex-1 bg-background justify-center px-6">
+        <Card>
+          <CardHeader className="items-center">
+            <CardTitle className="text-3xl">
+              Forgot Password
+            </CardTitle>
 
-      <Text className="text-gray-400 mb-8">
-        Enter your email to receive an OTP.
-      </Text>
+            <CardDescription className="text-center">
+              Enter your email to receive an OTP
+            </CardDescription>
+          </CardHeader>
 
-      <TextInput
-        placeholder="Email"
-        placeholderTextColor="#94A3B8"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail}
-        className="bg-card text-white rounded-xl px-4 py-4 mb-6"
-      />
+          <CardContent>
+            <Input
+              placeholder="Email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              onChangeText={(value) => {
+                reset();
+                setValue("email", value, {
+                  shouldValidate: true,
+                });
+              }}
+            />
 
-      <Pressable
-        onPress={handleSendOtp}
-        className="bg-primary rounded-xl py-4 items-center"
-      >
-        <Text className="text-white font-semibold text-base">
-          Send OTP
-        </Text>
-      </Pressable>
-    </View>
+            {errors.email && (
+              <Text className="text-red-500 text-xs mb-3">
+                {errors.email.message}
+              </Text>
+            )}
+
+            {error && (
+              <Text className="text-red-500 text-xs mb-3">
+                {getErrorMessage(error)}
+              </Text>
+            )}
+
+            <Button
+              className="mt-4"
+              disabled={isPending}
+              onPress={handleSubmit(onSubmit)}
+            >
+              <Text>
+                {isPending ? "Sending..." : "Send OTP"}
+              </Text>
+            </Button>
+          </CardContent>
+        </Card>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
