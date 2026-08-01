@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { OtpInput } from "react-native-otp-entry";
 
 import { Button } from "@/components/ui/button";
@@ -13,23 +13,34 @@ import {
 } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { verifyOtpSchema, VerifyOtpSchema } from "@/schemas/auth.schema";
+
+import { useVerifyOtp } from "@/hooks/auth/useVerifyOtp.hook";
+
 export default function VerifyOtpScreen() {
   const { email } = useLocalSearchParams<{ email: string }>();
 
-  const [otp, setOtp] = useState<string>("");
+  const { mutate, isPending } = useVerifyOtp();
 
-  const handleVerify = () => {
-    console.log(otp);
+  const {
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<VerifyOtpSchema>({
+    resolver: zodResolver(verifyOtpSchema),
+    defaultValues: {
+      otp: "",
+    },
+  });
 
-    // POST /auth/verify-otp
-    // {
-    //   email,
-    //   otp,
-    // }
-
-    router.push({
-      pathname: "/reset-password",
-      params: { email },
+  const onSubmit = (data: VerifyOtpSchema) => {
+    mutate({
+      email,
+      otp: data.otp,
     });
   };
 
@@ -54,7 +65,11 @@ export default function VerifyOtpScreen() {
             <OtpInput
               numberOfDigits={6}
               focusColor="#4F46E5"
-              onTextChange={setOtp}
+              onTextChange={(value) =>
+                setValue("otp", value, {
+                  shouldValidate: true,
+                })
+              }
               theme={{
                 containerStyle: {
                   marginBottom: 24,
@@ -77,8 +92,14 @@ export default function VerifyOtpScreen() {
               }}
             />
 
-            <Button onPress={handleVerify}>
-              <Text>Verify OTP</Text>
+            {errors.otp && (
+              <Text className="text-red-500 text-xs mb-3">
+                {errors.otp.message}
+              </Text>
+            )}
+
+            <Button disabled={isPending} onPress={handleSubmit(onSubmit)}>
+              <Text>{isPending ? "Verifying..." : "Verify OTP"}</Text>
             </Button>
           </CardContent>
         </Card>

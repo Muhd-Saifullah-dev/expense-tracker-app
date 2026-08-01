@@ -1,7 +1,4 @@
-import axios, {
-  AxiosError,
-  InternalAxiosRequestConfig,
-} from "axios";
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 import {
   getAccessToken,
@@ -9,6 +6,9 @@ import {
   updateAccessToken,
   removeTokens,
 } from "@/storage/token.storage";
+import { useAuthStore } from "@/store/auth.store";
+import { queryClient } from "./query-client";
+import { router } from "expo-router";
 
 export const api = axios.create({
   baseURL: process.env.EXPO_PUBLIC_SERVER_BASE_URL,
@@ -58,18 +58,11 @@ api.interceptors.response.use(
     }
 
     // Don't refresh for auth APIs
-    if (
-      authRoutes.some((route) =>
-        originalRequest.url?.includes(route),
-      )
-    ) {
+    if (authRoutes.some((route) => originalRequest.url?.includes(route))) {
       return Promise.reject(error);
     }
 
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry
-    ) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
@@ -89,8 +82,7 @@ api.interceptors.response.use(
         // Agar backend wrapper use karta hai:
         // { data: { accessToken } }
         const accessToken =
-          response.data.data?.accessToken ??
-          response.data.accessToken;
+          response.data.data?.accessToken ?? response.data.accessToken;
 
         if (!accessToken) {
           throw new Error("Access token not received");
@@ -98,15 +90,16 @@ api.interceptors.response.use(
 
         await updateAccessToken(accessToken);
 
-        originalRequest.headers.setAuthorization(
-          `Bearer ${accessToken}`,
-        );
+        originalRequest.headers.setAuthorization(`Bearer ${accessToken}`);
 
         return api(originalRequest);
       } catch (refreshError) {
         await removeTokens();
 
         // TODO:
+        useAuthStore.getState().clearAuth();
+        queryClient.clear();
+        router.replace("/(auth)/login");
         // useAuthStore.getState().clearAuth();
         // queryClient.clear();
         // router.replace("/(auth)/login");
