@@ -12,7 +12,7 @@ export const useForgetPassword = () => {
 
     onSuccess: (data, variables) => {
       console.log(data.message);
-      showSuccess("Success", data.message ?? "OTP sent successfully");
+      showSuccess(data.message ?? "OTP sent successfully");
 
       router.push({
         pathname: "/verify-otp",
@@ -23,10 +23,7 @@ export const useForgetPassword = () => {
     },
 
     onError: (error: any) => {
-      showError(
-        "Error",
-        error?.response?.data?.message ?? "Something went wrong",
-      );
+      showError(error?.response?.data?.message ?? "Something went wrong");
     },
   });
 };

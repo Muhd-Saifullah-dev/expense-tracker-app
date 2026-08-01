@@ -1,34 +1,25 @@
-import * as Burnt from "burnt";
+import Toast from "react-native-toast-message";
 
-export const showSuccess = (
-  title: string,
-  message?: string
-) => {
-  Burnt.toast({
-    title,
-    message,
-    preset: "done",
+export const showSuccess = (message: string) => {
+  Toast.show({
+    type: "success",
+    text1: message,
+    position: "top",
   });
 };
 
-export const showError = (
-  title: string,
-  message?: string
-) => {
-  Burnt.toast({
-    title,
-    message,
-    preset: "error",
+export const showError = (message: string) => {
+  Toast.show({
+    type: "error",
+    text1: message,
+    position: "top",
   });
 };
 
-export const showInfo = (
-  title: string,
-  message?: string
-) => {
-  Burnt.toast({
-    title,
-    message,
-    preset: "none",
+export const showInfo = (message: string) => {
+  Toast.show({
+    type: "info",
+    text1: message,
+    position: "top",
   });
 };
