@@ -11,20 +11,13 @@ export const useResetPassword = () => {
     mutationFn: resetPassword,
 
     onSuccess: (data) => {
-      showSuccess(
-        "Success",
-        data.message ?? "Password reset successfully"
-      );
+      showSuccess(data.message ?? "Password reset successfully");
 
       router.replace("/login");
     },
 
     onError: (error: any) => {
-      showError(
-        "Error",
-        error?.response?.data?.message ??
-          "Something went wrong"
-      );
+      showError(error?.response?.data?.message ?? "Something went wrong");
     },
   });
 };

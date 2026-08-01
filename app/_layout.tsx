@@ -4,7 +4,7 @@ import { Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/query-client";
-
+import Toast from "react-native-toast-message";
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -16,6 +16,7 @@ export default function RootLayout() {
             }}
           />
           <PortalHost />
+          <Toast/>
         </>
       </QueryClientProvider>
     </GestureHandlerRootView>

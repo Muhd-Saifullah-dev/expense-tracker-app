@@ -11,10 +11,7 @@ export const useVerifyOtp = () => {
     mutationFn: verifyOtp,
 
     onSuccess: (data, variables) => {
-      showSuccess(
-        "Success",
-        data.message ?? "OTP verified successfully"
-      );
+      showSuccess(data.message ?? "OTP verified successfully");
 
       router.push({
         pathname: "/reset-password",
@@ -25,10 +22,7 @@ export const useVerifyOtp = () => {
     },
 
     onError: (error: any) => {
-      showError(
-        "Error",
-        error?.response?.data?.message ?? "Invalid OTP"
-      );
+      showError(error?.response?.data?.message ?? "Invalid OTP");
     },
   });
 };
