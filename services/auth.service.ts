@@ -32,3 +32,8 @@ export const resetPassword = async (data: ResetPasswordPayload) => {
   const response = await api.post(API.RESET_PASSWORD, data);
   return response.data;
 };
+
+export const logout = async () => {
+  const response = await api.post(API.LOGOUT);
+  return response.data;
+};
