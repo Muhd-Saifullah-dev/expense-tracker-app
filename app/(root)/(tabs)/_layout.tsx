@@ -7,6 +7,7 @@ import {
   ChartPie,
   User,
 } from "lucide-react-native";
+import { View } from "react-native";
 
 export default function TabsLayout() {
   return (
@@ -49,7 +50,9 @@ export default function TabsLayout() {
         options={{
           title: "Add",
           tabBarIcon: ({ color, size }) => (
-            <CirclePlus color={color} size={30} />
+              <View className="h-14 w-14 -mt-8 items-center justify-center rounded-full bg-white">
+        <CirclePlus size={30} color="#4F46E5" />
+      </View>
           ),
         }}
       />
