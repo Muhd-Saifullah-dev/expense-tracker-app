@@ -13,8 +13,8 @@ export default function TabsLayout() {
   return (
     <Tabs
   screenOptions={{
-    headerShown: true,
-    header:()=><AppHHeader/>,
+    headerShown: false,
+
     tabBarStyle: {
       backgroundColor: "#4F46E5",
       borderTopWidth: 0,
@@ -27,8 +27,11 @@ export default function TabsLayout() {
     >
       <Tabs.Screen
         name="index"
+        
         options={{
           title: "Home",
+          headerShown:true,
+          header:()=><AppHHeader/>,
           tabBarIcon: ({ color, size }) => (
             <House color={color} size={size} />
           ),
@@ -48,9 +51,9 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="add"
         options={{
-          title: "Add",
+          title: "",
           tabBarIcon: ({ color, size }) => (
-              <View className="h-14 w-14 -mt-8 items-center justify-center rounded-full bg-white">
+              <View className="h-14 w-14 -mt-2 items-center justify-center rounded-full bg-white">
         <CirclePlus size={30} color="#4F46E5" />
       </View>
           ),
