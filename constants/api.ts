@@ -10,4 +10,11 @@ export const API = {
   USER_GET_PROFILE: "/user/profile",
   USER_UPDATE_PROFILE_NAME: "/user/profile",
   USER_CHANGE_PASSWORD: "/user/change-password",
+
+  //transaction
+  GET_TRANSACTIONS: "/transactions",
+  CREATE_TRANSACTION: "/transactions",
+
+  UPDATE_TRANSACTION: (id: string) => `/transactions/${id}`,
+  DELETE_TRANSACTION: (id: string) => `/transactions/${id}`,
 };
