@@ -57,7 +57,7 @@ export default function ExpenseCategoryDonut() {
             focusOnPress
             centerLabelComponent={() => (
               <View className="items-center">
-                <Text className="text-foreground text-xl font-bold">
+                <Text className="text-muted-foreground text-xl font-bold">
                   PKR
                 </Text>
                 <Text className="text-muted-foreground text-xs">

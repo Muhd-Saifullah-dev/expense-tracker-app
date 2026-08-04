@@ -5,9 +5,12 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/query-client";
 import Toast from "react-native-toast-message";
+import "@/lib/css-interop";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+       <BottomSheetModalProvider>
       <QueryClientProvider client={queryClient}>
         <>
           <Stack
@@ -19,6 +22,7 @@ export default function RootLayout() {
           <Toast/>
         </>
       </QueryClientProvider>
+      </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );
 }
