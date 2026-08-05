@@ -4,7 +4,13 @@ import { TransactionQuery } from "@/types/transaction.type";
 
 export const useTransactions = (params: TransactionQuery) => {
   return useInfiniteQuery({
-    queryKey: ["transactions", params],
+    queryKey: [
+      "transactions",
+      params.type,
+      params.categoryId,
+      params.startDate,
+      params.endDate,
+    ],
 
     queryFn: ({ pageParam }) =>
       get_transaction({
@@ -14,8 +20,9 @@ export const useTransactions = (params: TransactionQuery) => {
 
     initialPageParam: undefined,
 
-    getNextPageParam: (lastPage) => {
-      return lastPage?.hasMore ? lastPage.nextCursor : undefined;
-    },
+    getNextPageParam: (lastPage) =>
+      lastPage.hasMore ? lastPage.nextCursor : undefined,
+
+    staleTime: 1000 * 60 * 5,
   });
 };

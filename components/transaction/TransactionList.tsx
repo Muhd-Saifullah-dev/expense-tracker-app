@@ -1,66 +1,64 @@
-import { FlatList } from "react-native";
+import { FlatList, Text } from "react-native";
 import TransactionCard from "./TransactionCard";
+import { Loader2 } from "lucide-react-native";
+import type { Transaction } from "@/types/transaction.type";
+type Props = {
+  transactions: any[];
+  isLoading: boolean;
+  isFetchingNextPage: boolean;
+  hasNextPage: boolean;
+  fetchNextPage: () => void;
+  onPress: (transaction: Transaction) => void;
+};
 
-const transactions = [
-  {
-    id: "1",
-    title: "Food",
-    category: "Restaurant",
-    amount: 1200,
-    type: "expense",
-    date: "Today",
-  },
-  {
-    id: "2",
-    title: "Salary",
-    category: "Job",
-    amount: 80000,
-    type: "income",
-    date: "1 August 2026",
-  },
-    {
-    id: "3",
-    title: "Salary",
-    category: "Job",
-    amount: 80000,
-    type: "income",
-    date: "1 August 2026",
-  },
-    {
-    id: "4",
-    title: "Salary",
-    category: "Job",
-    amount: 80000,
-    type: "income",
-    date: "1 August 2026",
-  },
-    {
-    id: "5",
-    title: "Salary",
-    category: "Job",
-    amount: 80000,
-    type: "income",
-    date: "1 August 2026",
-  },
-];
+export default function TransactionList({
+   transactions,
+  isLoading,
+  isFetchingNextPage,
+  hasNextPage,
+  fetchNextPage,
+  onPress
+}: Props) {
 
-
-export default function TransactionList() {
-
+  if (isLoading) {
+    return (
+      <Text className="text-center text-white mt-10">
+        <Loader2 color={"#fff"} size={50} className="animate-spin"/>
+      </Text>
+    );
+  }
   return (
-    <FlatList
+     <FlatList className="flex-1 px-4 "
       data={transactions}
-      keyExtractor={(item)=>item.id}
-      contentContainerStyle={{
-        padding:16
+
+      keyExtractor={(item) => item.id}
+
+      onEndReached={() => {
+        console.log("END REACHED");
+
+        if (hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
       }}
+
+      onEndReachedThreshold={0.5}
+
+      ListFooterComponent={
+        isFetchingNextPage ? (
+          <Text className="text-center py-4">
+            Loading more...
+          </Text>
+        ) : null
+      }
+
       renderItem={({item})=>(
         <TransactionCard
           title={item.title}
-          category={item.category}
-          amount={item.amount}
-          type={item.type as "income" | "expense"}
-          date={item.date}
+          category={item.category?.name ?? "Income"}
+          amount={Number(item.amount)}
+          type={item.type.toLowerCase() as "income"|"expense"}
+          date={new Date(item.date).toLocaleDateString()}
+          onPress={() => onPress(item)}
         />
       )}
     />

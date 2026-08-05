@@ -1,6 +1,6 @@
 import { Card, CardContent } from "../ui/card";
 import { Text } from "../ui/text";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react-native";
 
 type TransactionCardProps = {
@@ -9,6 +9,7 @@ type TransactionCardProps = {
   amount: number;
   type: "income" | "expense";
   date: string;
+   onPress: () => void;
 };
 
 export default function TransactionCard({
@@ -17,11 +18,13 @@ export default function TransactionCard({
   amount,
   type,
   date,
+  onPress
 }: TransactionCardProps) {
 
   const isIncome = type === "income";
 
   return (
+    <Pressable onPress={onPress}>
     <Card className="mb-2 bg-card">
 
       <CardContent className="flex-row items-center justify-between px-3 py-2.5">
@@ -79,5 +82,6 @@ export default function TransactionCard({
       </CardContent>
 
     </Card>
+    </Pressable>
   );
 }
