@@ -1,4 +1,3 @@
-
 export type CreateTransactionData = {
   title: string;
   amount: number;
@@ -10,11 +9,24 @@ export type CreateTransactionData = {
 export type UpdateTransactionData = Partial<CreateTransactionData>;
 
 export type TransactionQuery = {
-  month?: number;
-  year?: number;
   type?: "ALL" | "INCOME" | "EXPENSE";
   categoryId?: number;
   search?: string;
+  startDate?: string;
+  endDate?: string;
   limit?: number;
   cursor?: string;
 };
+
+
+export interface Transaction {
+  id: string;
+  title: string;
+  amount: number;
+  type: "INCOME" | "EXPENSE";
+  date: string;
+  category?: {
+    id: string;
+    name: string;
+  };
+}

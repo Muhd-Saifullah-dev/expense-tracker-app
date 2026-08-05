@@ -1,92 +1,106 @@
 import { useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Search } from "lucide-react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { ArrowLeftRight } from "lucide-react-native";
 
 import ScreenHeader from "@/components/ScreenHeader";
-import MonthSelector from "@/components/transaction/MonthSelector";
-import MonthPickerSheet from "@/components/transaction/MonthPicker";
+import SearchBarWithFilter from "@/components/SearchBarWithFilter";
 import TransactionList from "@/components/transaction/TransactionList";
-import { colors } from "@/constants/colors";
-import TransactionSummary from "@/components/transaction/TransactionSummary";
+import TransactionFilterSheet from "@/components/transaction/TransactionFilterSheet";
 import AddTransactionButton from "@/components/transaction/AddTransactionButton";
-import TransactionFilter from "@/components/transaction/TransactionFilter";
-
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
+import { colors } from "@/constants/colors";
+import { useTransactions } from "@/hooks/transactions/useTransactions";
+import { TransactionQuery } from "@/types/transaction.type";
+import { useRouter } from "expo-router";
 
 export default function TransactionsScreen() {
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
-const [filter, setFilter] = useState("all");
-  const [year, setYear] = useState(new Date().getFullYear());
+  const router = useRouter();
+  const filterSheetRef = useRef<BottomSheetModal>(null);
 
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [filters, setFilters] = useState<TransactionQuery>({
+    type: "ALL",
+    categoryId: undefined,
+    startDate: undefined,
+    endDate: undefined,
+  });
+  const activeFilterCount =
+    (filters.type !== "ALL" ? 1 : 0) +
+    (filters.categoryId ? 1 : 0) +
+    (filters.startDate && filters.endDate ? 1 : 0);
+  const [appliedFilters, setAppliedFilters] = useState<TransactionQuery>({
+    type: "ALL",
+  });
+  const {
+    data,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useTransactions(appliedFilters);
 
-  const monthLabel = `${months[selectedMonth]} ${year}`;
+  const transactions = data?.pages.flatMap((page) => page.transactions) ?? [];
 
-  const openPicker = () => {
-    bottomSheetRef.current?.present();
-  };
-
-  const handleSelectMonth = (monthIndex: number) => {
-    setSelectedMonth(monthIndex);
-
-    bottomSheetRef.current?.dismiss();
-
-    // yahan baad mein API hit/refetch
-  };
-
+  console.log("pages", data?.pages.length);
+  console.log("hasNextPage", hasNextPage);
+  console.log("transactions", transactions.length);
   return (
-    <SafeAreaView   edges={["top"]} className="flex-1 bg-background">
+    <SafeAreaView edges={["top"]} className="flex-1 bg-background">
       <ScreenHeader
         title="Transactions"
-        Icon={Search}
+        Icon={ArrowLeftRight}
         titleClassName="text-foreground"
         iconColor={colors.mutedForeground}
       />
 
-      <MonthSelector month={monthLabel} onPress={openPicker} />
+      <SearchBarWithFilter
+        onPress={() => filterSheetRef.current?.present()}
+        filterCount={activeFilterCount}
+      />
 
-      <TransactionFilter
-  selected={filter}
-  onChange={setFilter}
-/>
+      <TransactionList
+        transactions={transactions}
+        isLoading={isLoading}
+        hasNextPage={hasNextPage}
+        fetchNextPage={fetchNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+         onPress={(transaction) =>
+    router.push(`/transactions/${transaction.id}`)
+  }
+      />
 
       <BottomSheetModal
-        ref={bottomSheetRef}
-        snapPoints={["55%"]}
+        ref={filterSheetRef}
+        snapPoints={["85%"]}
         enablePanDownToClose
       >
-        <MonthPickerSheet
-          year={year}
-          selectedMonth={selectedMonth}
-          onYearChange={setYear}
-          onSelectMonth={handleSelectMonth}
+        <TransactionFilterSheet
+          filters={filters}
+          onChange={setFilters}
+          onApply={() => {
+            setAppliedFilters(filters);
+
+            filterSheetRef.current?.dismiss();
+          }}
+          onReset={() => {
+            setFilters({
+              type: "ALL",
+              categoryId: undefined,
+              startDate: undefined,
+              endDate: undefined,
+            });
+
+            refetch();
+          }}
+          onOpenStartDate={() => {}}
+          onOpenEndDate={() => {}}
         />
       </BottomSheetModal>
-      <TransactionSummary income={80000} expense={35000} />
 
-      <TransactionList />
       <AddTransactionButton
-  onExpense={() => {
-    console.log("Open expense form");
-  }}
-  onIncome={() => {
-    console.log("Open income form");
-  }}
-/>
+        onExpense={() => router.push("/transactions/create?type=EXPENSE")}
+        onIncome={() => router.push("/transactions/create?type=INCOME")}
+      />
     </SafeAreaView>
   );
 }

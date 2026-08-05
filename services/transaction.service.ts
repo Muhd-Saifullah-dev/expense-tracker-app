@@ -21,10 +21,16 @@ export const delete_transaction = async (id: string) => {
 
 export const create_transaction = async (data: CreateTransactionData) => {
   const response = await api.post(API.CREATE_TRANSACTION, data);
-  return response.data
+  return response.data;
 };
 
-export const get_transaction=async(params:TransactionQuery)=>{
-  const response=await api.get(API.GET_TRANSACTIONS,{params})
-  return response.data
-}
+export const get_transaction = async (params: TransactionQuery) => {
+  const response = await api.get(API.GET_TRANSACTIONS, { params });
+  return response.data?.data;
+};
+
+export const get_single_transaction = async (id: string) => {
+  const response = await api.get(API.GET_SINGLE_TRANSACTION(id));
+  console.log("response  ",response.data)
+  return response.data;
+};

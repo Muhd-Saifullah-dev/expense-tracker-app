@@ -17,4 +17,5 @@ export const API = {
 
   UPDATE_TRANSACTION: (id: string) => `/transactions/${id}`,
   DELETE_TRANSACTION: (id: string) => `/transactions/${id}`,
+  GET_SINGLE_TRANSACTION: (id: string) => `/transactions/${id}`,
 };

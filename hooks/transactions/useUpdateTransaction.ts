@@ -15,20 +15,24 @@ export const useUpdateTransaction = () => {
       data: UpdateTransactionData;
     }) => update_transaction(id, data),
 
-    onSuccess: (response) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables) => {
+      await queryClient.invalidateQueries({
         queryKey: ["transactions"],
       });
 
+      await queryClient.invalidateQueries({
+        queryKey: ["transaction", variables.id],
+      });
+
       showSuccess(
-        response?.message || "Transaction updated successfully",
+        response?.message || "Transaction updated successfully"
       );
     },
 
     onError: (error: any) => {
       showError(
         error?.response?.data?.message ||
-          "Something went wrong",
+          "Something went wrong"
       );
     },
   });
