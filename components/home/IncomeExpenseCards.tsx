@@ -5,7 +5,13 @@ import { Wallet, TrendingUp, TrendingDown } from "lucide-react-native";
 import { Card, CardContent } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
 
-export default function IncomeExpenseCards() {
+type Props= {
+  expense:number,
+  income:number
+}
+export default function IncomeExpenseCards({ expense = 0,
+  income = 0,
+}: Props) {
   return (
     <View className="gap-4">
       {/* Balance */}
@@ -25,7 +31,7 @@ export default function IncomeExpenseCards() {
             </Text>
 
             <Text className="text-green-500 text-xl font-bold mt-1">
-              Rs. 80,000
+              Rs. {income}
             </Text>
           </CardContent>
         </Card>
@@ -42,7 +48,7 @@ export default function IncomeExpenseCards() {
             </Text>
 
             <Text className="text-red-500 text-xl font-bold mt-1">
-              Rs. 31,500
+              Rs. {expense}
             </Text>
           </CardContent>
         </Card>
