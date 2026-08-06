@@ -5,11 +5,21 @@ import { Wallet, TrendingUp, TrendingDown } from "lucide-react-native";
 import { Card, CardContent } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
 
-export default function BalanceCard() {
-  const balance = 24500;
-  const income = 40000;
-  const expense = 15500;
+type Props = {
+  data?: {
+    income: number;
+    expense: number;
+    balance: number;
+  };
+  isLoading: boolean;
+};
+export default function BalanceCard({
+  data,
+  isLoading,
+}: Props) {
 
+   if (isLoading) return null;
+ 
   return (
     <Card className="mx-5 mt-5">
       <CardContent className="p-5">
@@ -20,7 +30,7 @@ export default function BalanceCard() {
             </Text>
 
             <Text className="mt-1 text-3xl font-bold text-foreground">
-              Rs. {balance.toLocaleString()}
+              Rs. {data?.balance?.toLocaleString() ?? "0"}
             </Text>
           </View>
 

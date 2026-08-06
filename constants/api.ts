@@ -18,4 +18,15 @@ export const API = {
   UPDATE_TRANSACTION: (id: string) => `/transactions/${id}`,
   DELETE_TRANSACTION: (id: string) => `/transactions/${id}`,
   GET_SINGLE_TRANSACTION: (id: string) => `/transactions/${id}`,
+
+
+  // budget
+   GET_BUDGETS: "/budgets",
+  CREATE_BUDGET: "/budgets",
+  UPDATE_BUDGET: (id: number) => `/budgets/${id}`,
+  DELETE_BUDGET: (id: number) => `/budgets/${id}`,
+  GET_SINGLE_BUDGET: (id: number) => `/budgets/${id}`,
+
+  // dashboard
+  GET_DASHBOARD:"/dashboard"
 };
