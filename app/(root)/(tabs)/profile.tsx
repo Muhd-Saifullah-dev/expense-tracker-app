@@ -12,7 +12,9 @@ import { Text } from "@/components/ui/text";
 import { useGetUserProfile } from "@/hooks/user/use.user.hooks";
 import { ScrollView } from "react-native";
 import { useLogout } from "@/hooks/auth/useLogout.hooks";
-
+import ScreenHeader from "@/components/ScreenHeader";
+import { colors } from "@/constants/colors";
+import { Cog } from "lucide-react-native";
 export default function ProfileScreen() {
   const { data, isLoading } = useGetUserProfile();
   const { mutate: logout, isPending } = useLogout();
@@ -45,6 +47,11 @@ export default function ProfileScreen() {
         paddingBottom: 24,
       }}
     >
+      <ScreenHeader
+        iconColor={colors.mutedForeground}
+        title="Profile"
+        Icon={Cog}
+      />
       <View>
         {/* Profile */}
         <View className="items-center">
