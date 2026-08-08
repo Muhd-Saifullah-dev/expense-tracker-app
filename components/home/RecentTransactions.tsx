@@ -102,7 +102,7 @@ export default function RecentTransactions({
                       </Text>
 
                       <Text className="text-muted-foreground text-xs mt-1">
-                        {item.category.name} •{" "}
+                        {item.category?.name} •{" "}
                         {formatDate(item.date)}
                       </Text>
                     </View>
