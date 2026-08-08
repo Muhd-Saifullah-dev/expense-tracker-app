@@ -62,7 +62,7 @@ const maxValue = Math.max(
         </Text>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="flex-1 w-full">
      <BarChart
   data={chartData}
   isAnimated

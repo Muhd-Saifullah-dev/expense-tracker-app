@@ -43,13 +43,15 @@ export default function HomeScreen() {
   isLoading={isLoading}/>
 
         {/* Balance Trend */}
-        <BalanceTrendChart />
+        <BalanceTrendChart    data={dashboard?.balanceTrend ?? []}
+  isLoading={isLoading}/>
 
         {/* Expense Categories */}
-        <ExpenseCategoryDonut />
+        <ExpenseCategoryDonut data={dashboard?.expenseCategories ?? []} isLoading={isLoading} />
 
         {/* Recent Transactions */}
-        <RecentTransactions />
+        <RecentTransactions  data={dashboard?.recentTransactions ?? []}
+  isLoading={isLoading} />
       </View>
     </ScrollView>
   );
